@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/Darcygift/imara#readme",
   "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
     "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "autoprefixer": "^10.5.4",
