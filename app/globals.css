@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.6%;
+  --primary: 262 80% 50%;
+  --secondary: 215 14% 34%;
+  --accent: 17 100% 60%;
+  --destructive: 0 84% 60%;
+  --border: 214 32% 91%;
+  --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 0 0% 3.6%;
+    --foreground: 0 0% 98%;
+    --primary: 262 80% 60%;
+    --secondary: 215 28% 56%;
+    --accent: 17 100% 70%;
+    --destructive: 0 86% 97%;
+  }
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-feature-settings: "rounding-mode" 0;
+}
+
+/* Professional Dashboard Styling */
+.dashboard-container {
+  @apply min-h-screen bg-background;
+}
+
+.sidebar {
+  @apply bg-secondary text-white;
+}
+
+.card {
+  @apply bg-white dark:bg-slate-900 rounded-lg shadow-md p-6 border border-border;
+}
+
+.btn-primary {
+  @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-secondary text-white rounded-lg hover:bg-opacity-90 transition-all;
+}
+
+.input-field {
+  @apply w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.badge {
+  @apply inline-block px-2 py-1 text-xs font-semibold rounded-full;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+.badge-pending {
+  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+}
