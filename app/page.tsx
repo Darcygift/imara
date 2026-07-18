@@ -1,176 +1,283 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import DashboardHeader from "@/components/DashboardHeader";
-import StatsCard from "@/components/StatsCard";
-import PaymentChart from "@/components/PaymentChart";
-import RecentPayments from "@/components/RecentPayments";
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-export default function Dashboard() {
-  const stats = {
-    totalProperties: 12,
-    totalTenants: 34,
-    occupiedUnits: 28,
-    pendingPayments: 5,
-    totalRentCollected: 85000,
-    outstandingAmount: 12500,
-  };
+export default function Home() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
-  return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <div className="w-64 bg-secondary text-white flex flex-col">
-        <div className="p-6 border-b border-white/10">
-          <h1 className="text-2xl font-bold">Smart Rent</h1>
-          <p className="text-sm text-white/60 mt-1">Property Management</p>
-        </div>
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      
+      if (user) {
+        setUser(user)
+        router.push('/dashboard/overview')
+      } else {
+        setLoading(false)
+      }
+    }
 
-        <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-          <NavLink href="/" label="Overview" icon="📊" active />
-          <NavLink href="/properties" label="Properties" icon="🏠" />
-          <NavLink href="/tenants" label="Tenants" icon="👥" />
-          <NavLink href="/payments" label="Payments" icon="💳" />
-          <NavLink href="/settings" label="Settings" icon="⚙️" />
-        </nav>
+    checkUser()
+  }, [router])
 
-        <div className="p-4 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-secondary font-bold">
-              L
-            </div>
-            <div>
-              <p className="text-sm font-semibold">Landlord Account</p>
-              <p className="text-xs text-white/60">Profile</p>
-            </div>
-          </div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-foreground/60">Loading...</p>
         </div>
       </div>
+    )
+  }
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <DashboardHeader />
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🏠</span>
+            <span className="text-xl font-bold text-foreground">Smart Rent</span>
+          </div>
+          <div className="flex gap-4">
+            <Link href="/auth/login">
+              <button className="btn-ghost">Login</button>
+            </Link>
+            <Link href="/auth/sign-up">
+              <button className="btn-primary">Sign Up</button>
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-        <main className="p-8">
-          <div className="space-y-8">
-            {/* Page Title */}
-            <div>
-              <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-              <p className="text-foreground/60 mt-2">
-                Welcome back! Here&apos;s your property management summary.
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h1 className="heading-1 text-5xl">
+                Professional Property Management Made Simple
+              </h1>
+              <p className="text-xl text-muted max-w-lg">
+                Manage properties, tenants, and payments all in one platform. Streamline your rental business with Smart Rent.
               </p>
             </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <StatsCard
-                label="Total Properties"
-                value={stats.totalProperties}
-                icon="🏢"
-                bgColor="bg-accent/20"
-                textColor="text-accent"
-              />
-              <StatsCard
-                label="Total Tenants"
-                value={stats.totalTenants}
-                icon="👥"
-                bgColor="bg-primary/20"
-                textColor="text-primary"
-              />
-              <StatsCard
-                label="Occupied Units"
-                value={`${stats.occupiedUnits}/28`}
-                icon="📍"
-                bgColor="bg-green-500/20"
-                textColor="text-green-600"
-              />
-            </div>
-
-            {/* Financial Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 card">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold">
-                    Payment Collection Trend
-                  </h3>
-                  <button className="text-foreground/60 hover:text-foreground">
-                    ⚙️
-                  </button>
-                </div>
-                <PaymentChart />
-              </div>
-
-              <div className="space-y-4">
-                <div className="card bg-accent/10 border-accent">
-                  <p className="text-sm text-foreground/60 mb-2">
-                    Rent Collected (Month)
-                  </p>
-                  <p className="text-3xl font-bold text-accent">
-                    ${stats.totalRentCollected.toLocaleString()}
-                  </p>
-                  <p className="text-xs text-foreground/60 mt-2">
-                    This month&apos;s collection
-                  </p>
-                </div>
-
-                <div className="card bg-red-500/10 border-red-500/20">
-                  <p className="text-sm text-foreground/60 mb-2">
-                    Outstanding Amount
-                  </p>
-                  <p className="text-3xl font-bold text-red-600">
-                    ${stats.outstandingAmount.toLocaleString()}
-                  </p>
-                  <p className="text-xs text-foreground/60 mt-2">
-                    Pending payments
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Payments */}
-            <RecentPayments />
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href="/properties/new">
-                <button className="w-full btn-primary">
-                  Add New Property
+            <div className="flex gap-4">
+              <Link href="/auth/sign-up">
+                <button className="btn-primary py-3 px-8 text-lg">
+                  Get Started Free
                 </button>
               </Link>
-              <Link href="/tenants/new">
-                <button className="w-full btn-secondary">Add Tenant</button>
+              <Link href="/auth/login">
+                <button className="btn-outline py-3 px-8 text-lg">
+                  Login to Account
+                </button>
               </Link>
             </div>
+            <p className="text-sm text-muted">No credit card required. Start managing in minutes.</p>
           </div>
-        </main>
-      </div>
-    </div>
-  );
-}
+          <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 h-96 flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <div className="text-6xl">🏢</div>
+              <p className="text-foreground/60">Professional Property Management Platform</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-function NavLink({
-  href,
-  label,
-  icon,
-  active = false,
-}: {
-  href: string;
-  label: string;
-  icon: string;
-  active?: boolean;
-}) {
-  return (
-    <Link href={href}>
-      <button
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-          active
-            ? "bg-white/10 border-l-4 border-accent text-accent"
-            : "hover:bg-white/5"
-        }`}
-      >
-        <span className="text-xl">{icon}</span>
-        <span className="font-medium">{label}</span>
-      </button>
-    </Link>
-  );
+      {/* Features Section */}
+      <section className="py-20 bg-foreground/5 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="heading-2 mb-4">Powerful Features</h2>
+            <p className="text-muted max-w-2xl mx-auto">Everything you need to manage your rental properties efficiently</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: '🏠',
+                title: 'Property Management',
+                description: 'Easily manage multiple properties with all their details in one place',
+              },
+              {
+                icon: '👥',
+                title: 'Tenant Management',
+                description: 'Track tenant information, leases, and employment history',
+              },
+              {
+                icon: '💰',
+                title: 'Payment Tracking',
+                description: 'Monitor rent payments, track overdue amounts, and send reminders',
+              },
+              {
+                icon: '📊',
+                title: 'Analytics & Reports',
+                description: 'Get insights into your portfolio with detailed analytics',
+              },
+              {
+                icon: '📱',
+                title: 'Mobile Payments',
+                description: 'Accept MTN MoMo and other mobile money payments',
+              },
+              {
+                icon: '🔒',
+                title: 'Secure & Reliable',
+                description: 'Enterprise-grade security with Supabase authentication',
+              },
+            ].map((feature, idx) => (
+              <div key={idx} className="card hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                <p className="text-muted">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="heading-2 mb-4">Simple Pricing</h2>
+          <p className="text-muted max-w-2xl mx-auto">Choose the plan that fits your needs</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            {
+              name: 'Starter',
+              price: 'Free',
+              description: 'Perfect for getting started',
+              features: [
+                'Up to 5 properties',
+                'Basic tenant management',
+                'Payment tracking',
+                'Email support',
+              ],
+            },
+            {
+              name: 'Professional',
+              price: '$29',
+              period: '/month',
+              description: 'For growing businesses',
+              features: [
+                'Unlimited properties',
+                'Advanced analytics',
+                'Mobile payment integration',
+                'SMS notifications',
+                'Priority support',
+              ],
+              highlighted: true,
+            },
+            {
+              name: 'Enterprise',
+              price: 'Custom',
+              description: 'For large portfolios',
+              features: [
+                'Everything in Professional',
+                'API access',
+                'Custom integrations',
+                'Dedicated account manager',
+                '24/7 phone support',
+              ],
+            },
+          ].map((plan, idx) => (
+            <div
+              key={idx}
+              className={`card ${plan.highlighted ? 'ring-2 ring-primary scale-105' : ''} flex flex-col`}
+            >
+              <h3 className="font-semibold text-xl mb-2">{plan.name}</h3>
+              <p className="text-muted text-sm mb-4">{plan.description}</p>
+              <div className="mb-6">
+                <span className="text-4xl font-bold">{plan.price}</span>
+                {plan.period && <span className="text-muted text-sm">{plan.period}</span>}
+              </div>
+              <ul className="space-y-3 mb-6 flex-1">
+                {plan.features.map((feature, i) => (
+                  <li key={i} className="text-sm flex items-center gap-2">
+                    <span className="text-accent">✓</span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/auth/sign-up">
+                <button className={`w-full ${plan.highlighted ? 'btn-primary' : 'btn-outline'}`}>
+                  Get Started
+                </button>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary text-white rounded-2xl max-w-7xl mx-auto mb-20">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl font-bold">Ready to Transform Your Property Management?</h2>
+          <p className="text-white/80 max-w-2xl mx-auto">
+            Join thousands of property managers using Smart Rent to streamline their business
+          </p>
+          <Link href="/auth/sign-up">
+            <button className="bg-white text-primary font-semibold py-3 px-8 rounded-lg hover:bg-white/90 transition-all">
+              Start Your Free Trial
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-foreground/5 border-t border-border py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">🏠</span>
+                <span className="font-bold">Smart Rent</span>
+              </div>
+              <p className="text-muted text-sm">Professional property management made simple</p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-muted">
+                <li><a href="#" className="hover:text-foreground">Features</a></li>
+                <li><a href="#" className="hover:text-foreground">Pricing</a></li>
+                <li><a href="#" className="hover:text-foreground">Security</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-muted">
+                <li><a href="#" className="hover:text-foreground">About</a></li>
+                <li><a href="#" className="hover:text-foreground">Blog</a></li>
+                <li><a href="#" className="hover:text-foreground">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-muted">
+                <li><a href="#" className="hover:text-foreground">Privacy</a></li>
+                <li><a href="#" className="hover:text-foreground">Terms</a></li>
+                <li><a href="#" className="hover:text-foreground">Security</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-border pt-8">
+            <p className="text-center text-muted text-sm">
+              © 2024 Smart Rent. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
 }
