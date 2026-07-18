@@ -1,0 +1,49 @@
+{
+  "name": "smart-rent",
+  "version": "1.0.0",
+  "description": "Professional property management system for landlords. Manage properties, tenants, payments, and automate rent collection.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "backend:dev": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darcygift/imara.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Darcygift/imara/issues"
+  },
+  "homepage": "https://github.com/Darcygift/imara#readme",
+  "dependencies": {
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "autoprefixer": "^10.5.4",
+    "axios": "^1.18.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "next": "^16.2.10",
+    "next-auth": "^4.24.14",
+    "pg": "^8.22.0",
+    "postcss": "^8.5.19",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
